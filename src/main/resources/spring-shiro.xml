@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<description>Shiro</description>
+
+	<bean id="sampleRealm" class="com.lazyor.shiro.CustomRealm"></bean>
+	<!-- 缓存管理器 使用Ehcache实现 -->
+	<bean id="cacheManager" class="org.apache.shiro.cache.ehcache.EhCacheManager">
+		<property name="cacheManagerConfigFile" value="classpath:ehcache.xml" />
+	</bean>
+
+	<bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+		<property name="realm" ref="sampleRealm" />
+		<property name="cacheManager" ref="cacheManager" />
+	</bean>
+	<bean id="ajaxfilter" class="com.lazyor.shiro.AjaxFilter" />
+
+	<bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+		<property name="securityManager" ref="securityManager" />
+		<property name="loginUrl" value="/" />
+		<!-- <property name="successUrl" value="/hgc/main" /> -->
+		<property name="unauthorizedUrl" value="/unauthor" />
+		<property name="filterChainDefinitions">
+			<value>
+				/user/**=anon  <!-- 匿名游客登录 -->
+				/tab/**=authc  <!-- /tab/下所有的url都要登录认证 -->
+				/mana/**=s <!-- 后台管理 需要登录认证 -->
+				/jzfp/**=s <!-- 精准扶贫登录认证 -->
+				/tpzl/**=s <!-- 脱贫成效登录认证 -->
+				/fpcx/**=s  <!--扶贫成效登录认证 -->
+                /zhxq/**=s  <!--综合县情登录认证 -->
+                /upload/**=s<!--上传文件登录认证 -->
+			</value>
+		</property>
+		<property name="filters">
+			<util:map>
+				<entry key="s" value-ref="ajaxfilter"></entry>
+			</util:map>
+		</property>
+	</bean>
+	<bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor" />
+</beans>
