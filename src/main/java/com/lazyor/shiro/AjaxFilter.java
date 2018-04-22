@@ -8,6 +8,7 @@ import javax.servlet.ServletResponse;
 public class AjaxFilter extends AccessControlFilter {
     @Override
     protected boolean isAccessAllowed(ServletRequest servletRequest, ServletResponse servletResponse, Object o) throws Exception {
+        System.out.println("AjaxFilter.isAccessAllowed");
         return false;
     }
 
